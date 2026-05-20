@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Support Triage Dashboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+         background: #f5f6fa; color: #1a1a2e; padding: 24px; }
+  h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { color: #666; font-size: 0.9rem; margin-bottom: 24px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .card h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: .06em; color: #888; margin-bottom: 12px; }
+  .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem; }
+  .stat-row:last-child { border-bottom: none; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+  .badge-Critical { background: #fee2e2; color: #b91c1c; }
+  .badge-High     { background: #ffedd5; color: #c2410c; }
+  .badge-Medium   { background: #fef9c3; color: #854d0e; }
+  .badge-Low      { background: #dcfce7; color: #166534; }
+  .badge-Open     { background: #dbeafe; color: #1e40af; }
+  .badge-Escalated{ background: #fee2e2; color: #b91c1c; }
+  .badge-Resolved { background: #dcfce7; color: #166534; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .kpi { background: white; border-radius: 10px; padding: 20px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .kpi .val { font-size: 2rem; font-weight: 700; }
+  .kpi .lbl { font-size: 0.75rem; color: #888; margin-top: 4px; text-transform: uppercase; }
+  .kpi.warn .val { color: #c2410c; }
+  .kpi.ok   .val { color: #166534; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  th { background: #f8f9fb; text-align: left; padding: 8px 10px; font-weight: 600; color: #555; font-size: 0.78rem; text-transform: uppercase; }
+  td { padding: 8px 10px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr.recurrence td { background: #fffbeb; }
+  .prior-list { font-size: 0.75rem; color: #888; }
+  .full-width { grid-column: 1 / -1; }
+  .risk-flag { color: #c2410c; font-weight: 600; }
+  .bar-wrap { background: #f0f0f0; border-radius: 4px; height: 8px; flex: 1; margin-left: 10px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; background: #6366f1; }
+  .stat-bar { display: flex; align-items: center; padding: 7px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.88rem; }
+  .stat-bar:last-child { border-bottom: none; }
+  .stat-label { width: 140px; flex-shrink: 0; }
+  .stat-val { width: 36px; text-align: right; font-weight: 600; color: #333; margin-left: 8px; }
+</style>
+</head>
+<body>
+<h1>Support Triage Dashboard</h1>
+<p class="subtitle">Generated 2026-05-19 17:50 · 49 tickets analysed</p>
+
+<div class="kpi-grid">
+  <div class="kpi warn">
+    <div class="val">18</div>
+    <div class="lbl">Open / Escalated</div>
+  </div>
+  <div class="kpi warn">
+    <div class="val">5</div>
+    <div class="lbl">Escalated</div>
+  </div>
+  <div class="kpi warn">
+    <div class="val">30.6%</div>
+    <div class="lbl">Missing Priority</div>
+  </div>
+  <div class="kpi ok">
+    <div class="val">3.94</div>
+    <div class="lbl">Avg Satisfaction</div>
+  </div>
+</div>
+
+<div class="grid">
+
+  <div class="card">
+    <h2>Volume by Category</h2>
+    
+    
+    <div class="stat-bar">
+      <div class="stat-label">Model Output</div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div>
+      <div class="stat-val">20</div>
+    </div>
+    
+    <div class="stat-bar">
+      <div class="stat-label">Integration</div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:55%"></div></div>
+      <div class="stat-val">11</div>
+    </div>
+    
+    <div class="stat-bar">
+      <div class="stat-label">Performance</div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:30%"></div></div>
+      <div class="stat-val">6</div>
+    </div>
+    
+    <div class="stat-bar">
+      <div class="stat-label">Billing</div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:25%"></div></div>
+      <div class="stat-val">5</div>
+    </div>
+    
+    <div class="stat-bar">
+      <div class="stat-label">Safety</div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:15%"></div></div>
+      <div class="stat-val">3</div>
+    </div>
+    
+    <div class="stat-bar">
+      <div class="stat-label">Onboarding</div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:15%"></div></div>
+      <div class="stat-val">3</div>
+    </div>
+    
+    <div class="stat-bar">
+      <div class="stat-label">Account</div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:5%"></div></div>
+      <div class="stat-val">1</div>
+    </div>
+    
+  </div>
+
+  <div class="card">
+    <h2>Priority Distribution (AI-Suggested)</h2>
+    
+    
+    <div class="stat-row">
+      <span><span class="badge badge-Critical">Critical</span></span>
+      <span>17</span>
+    </div>
+    
+    
+    <div class="stat-row">
+      <span><span class="badge badge-High">High</span></span>
+      <span>10</span>
+    </div>
+    
+    
+    <div class="stat-row">
+      <span><span class="badge badge-Medium">Medium</span></span>
+      <span>11</span>
+    </div>
+    
+    
+    <div class="stat-row">
+      <span><span class="badge badge-Low">Low</span></span>
+      <span>11</span>
+    </div>
+    
+  </div>
+
+  <div class="card">
+    <h2>Satisfaction by Category</h2>
+    
+    <div class="stat-row">
+      <span>Model Output</span>
+      <span style="color: #b91c1c; font-weight:600">2.89 / 5</span>
+    </div>
+    
+    <div class="stat-row">
+      <span>Performance</span>
+      <span style="color: #854d0e; font-weight:600">3.5 / 5</span>
+    </div>
+    
+    <div class="stat-row">
+      <span>Billing</span>
+      <span style="color: #166534; font-weight:600">4.0 / 5</span>
+    </div>
+    
+    <div class="stat-row">
+      <span>Onboarding</span>
+      <span style="color: #166534; font-weight:600">4.67 / 5</span>
+    </div>
+    
+    <div class="stat-row">
+      <span>Integration</span>
+      <span style="color: #166534; font-weight:600">4.8 / 5</span>
+    </div>
+    
+  </div>
+
+  <div class="card">
+    <h2>Avg Resolution Time (hrs)</h2>
+    
+    <div class="stat-row"><span>Model Output</span><span>4.3h</span></div>
+    
+    <div class="stat-row"><span>Performance</span><span>3.0h</span></div>
+    
+    <div class="stat-row"><span>Onboarding</span><span>1.8h</span></div>
+    
+    <div class="stat-row"><span>Integration</span><span>1.5h</span></div>
+    
+    <div class="stat-row"><span>Billing</span><span>1.1h</span></div>
+    
+  </div>
+
+  <div class="card">
+    <h2>Recurring Customer Hotspots</h2>
+    
+    <div class="stat-row">
+      <span>CUST-4421</span>
+      <span class="risk-flag">5 tickets</span>
+    </div>
+    
+    <div class="stat-row">
+      <span>CUST-1155</span>
+      <span class="risk-flag">4 tickets</span>
+    </div>
+    
+    <div class="stat-row">
+      <span>CUST-8801</span>
+      <span class="risk-flag">4 tickets</span>
+    </div>
+    
+    <div class="stat-row">
+      <span>CUST-9921</span>
+      <span class="risk-flag">4 tickets</span>
+    </div>
+    
+    <div class="stat-row">
+      <span>CUST-2234</span>
+      <span class="">3 tickets</span>
+    </div>
+    
+  </div>
+
+  <div class="card">
+    <h2>Customers At Risk (3+ tickets)</h2>
+    
+    <div class="stat-row">
+      <span>CUST-4421<br><small class="prior-list">5 tickets · sat 2.5/5</small></span>
+      <span>
+        <span class="badge badge-Open">3 open</span>
+      </span>
+    </div>
+    
+    <div class="stat-row">
+      <span>CUST-5502<br><small class="prior-list">5 tickets · sat 3.5/5</small></span>
+      <span>
+        <span class="badge badge-Open">3 open</span>
+      </span>
+    </div>
+    
+    <div class="stat-row">
+      <span>CUST-1155<br><small class="prior-list">4 tickets · sat 4.0/5</small></span>
+      <span>
+        <span class="badge badge-Open">3 open</span>
+      </span>
+    </div>
+    
+    <div class="stat-row">
+      <span>CUST-2891<br><small class="prior-list">4 tickets · sat 4.5/5</small></span>
+      <span>
+        
+      </span>
+    </div>
+    
+    <div class="stat-row">
+      <span>CUST-3310<br><small class="prior-list">4 tickets · sat 2.5/5</small></span>
+      <span>
+        <span class="badge badge-Open">2 open</span>
+      </span>
+    </div>
+    
+  </div>
+
+</div>
+
+<div class="card full-width">
+  <h2>Per-Ticket Triage Results</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Ticket</th>
+        <th>Date</th>
+        <th>Customer</th>
+        <th>Priority</th>
+        <th>Category / Sub</th>
+        <th>Status</th>
+        <th>Recurring</th>
+        <th>Explanation</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-001</strong></td>
+      <td>2024-01-03</td>
+      <td>CUST-4421</td>
+      <td><span class="badge badge-High">High</span></td>
+      <td>Model Output<br><small class="prior-list">Hallucination</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-004</span>
+        
+      </td>
+      <td style="max-width:320px">Customer reports model providing outdated inventory data (discontinued items), which directly impacts their business operations and customer-facing systems. Low satisfaction score (3.0) despite resolution suggests underlying issue may not be fully addressed.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-002</strong></td>
+      <td>2024-01-04</td>
+      <td>CUST-2891</td>
+      <td><span class="badge badge-High">High</span></td>
+      <td>Integration<br><small class="prior-list">API Timeout</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-013, TKT-047</span>
+        
+      </td>
+      <td style="max-width:320px">API timeouts on large batch processing block production workflows. Despite high satisfaction score, this represents a functional blocking issue that should be investigated to prevent recurrence.</td>
+    </tr>
+    
+    <tr class="">
+      <td><strong>TKT-003</strong></td>
+      <td>2024-01-04</td>
+      <td>CUST-3310</td>
+      <td><span class="badge badge-Medium">Medium</span></td>
+      <td>Billing<br><small class="prior-list">Overage</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        -
+      </td>
+      <td style="max-width:320px">Customer is being charged for failed API calls, which is a billing fairness issue. This is a policy/system concern that could affect multiple customers and should be reviewed for accuracy.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-004</strong></td>
+      <td>2024-01-05</td>
+      <td>CUST-4421</td>
+      <td><span class="badge badge-Critical">Critical</span></td>
+      <td>Model Output<br><small class="prior-list">Inconsistency</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-001</span>
+        
+      </td>
+      <td style="max-width:320px">Same customer (CUST-4421) reports non-deterministic model outputs for compliance use case with very low satisfaction (2.0), creating legal and regulatory exposure. Inconsistent outputs in compliance contexts pose serious legal liability.</td>
+    </tr>
+    
+    <tr class="">
+      <td><strong>TKT-006</strong></td>
+      <td>2024-01-08</td>
+      <td>CUST-5502</td>
+      <td><span class="badge badge-High">High</span></td>
+      <td>Integration<br><small class="prior-list">API Error</small></td>
+      <td><span class="badge badge-Open">Open</span></td>
+      <td>
+        -
+      </td>
+      <td style="max-width:320px">Customer experiencing constant 429 rate limit errors despite being within limits—indicates either a metering bug or dashboard accuracy issue. This is actively blocking their service (Open status) and requires immediate investigation.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-007</strong></td>
+      <td>2024-01-08</td>
+      <td>CUST-2234</td>
+      <td><span class="badge badge-Critical">Critical</span></td>
+      <td>Model Output<br><small class="prior-list">Bias</small></td>
+      <td><span class="badge badge-Escalated">Escalated</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-037, TKT-021</span>
+        
+      </td>
+      <td style="max-width:320px">Model exhibits gender-based bias in HR application context, creating serious discrimination and legal liability exposure. Already escalated status indicates severity; this requires immediate investigation and potential deployment pause.</td>
+    </tr>
+    
+    <tr class="">
+      <td><strong>TKT-008</strong></td>
+      <td>2024-01-09</td>
+      <td>CUST-6671</td>
+      <td><span class="badge badge-Medium">Medium</span></td>
+      <td>Integration<br><small class="prior-list">Webhook</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        -
+      </td>
+      <td style="max-width:320px">Webhooks not firing on job completion is a functional integration issue, though high satisfaction score suggests either workaround was found or issue was intermittent. Should verify fix stability.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-009</strong></td>
+      <td>2024-01-10</td>
+      <td>CUST-3310</td>
+      <td><span class="badge badge-Critical">Critical</span></td>
+      <td>Model Output<br><small class="prior-list">Hallucination</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-024</span>
+        
+      </td>
+      <td style="max-width:320px">Model fabricated legal case references in contract review deployment, creating severe legal liability. Customer's legal team is escalated (lowest satisfaction 1.0), representing potential contract/cancellation risk with legal exposure.</td>
+    </tr>
+    
+    <tr class="">
+      <td><strong>TKT-010</strong></td>
+      <td>2024-01-10</td>
+      <td>CUST-4892</td>
+      <td><span class="badge badge-Low">Low</span></td>
+      <td>Billing<br><small class="prior-list">Account Management</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        -
+      </td>
+      <td style="max-width:320px">Standard billing/account question about invoice download—basic user support request with straightforward resolution pathway.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-011</strong></td>
+      <td>2024-01-11</td>
+      <td>CUST-1155</td>
+      <td><span class="badge badge-High">High</span></td>
+      <td>Performance<br><small class="prior-list">Latency</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-005</span>
+        
+      </td>
+      <td style="max-width:320px">Latency issue referenced as recurring (TKT-005 mentioned) with degraded performance returning (8-12 second response times). Recurring performance issues after resolution indicate root cause may not have been addressed.</td>
+    </tr>
+    
+    <tr class="">
+      <td><strong>TKT-012</strong></td>
+      <td>2024-01-11</td>
+      <td>CUST-7743</td>
+      <td><span class="badge badge-Medium">Medium</span></td>
+      <td>Model Output<br><small class="prior-list">Context Window</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        -
+      </td>
+      <td style="max-width:320px">Customer reports context loss in conversations beyond 15-20 messages, which is a known limitation but significant for usability. Low satisfaction score (3.0) indicates this is impacting their experience and warrants investigation into whether this is expected behavior or a configuration issue.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-013</strong></td>
+      <td>2024-01-14</td>
+      <td>CUST-2891</td>
+      <td><span class="badge badge-High">High</span></td>
+      <td>Integration<br><small class="prior-list">Authentication</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-047, TKT-002</span>
+        
+      </td>
+      <td style="max-width:320px">API authentication failure after key rotation is a production blocker that prevented service continuity. While marked resolved with high satisfaction, this indicates a real integration vulnerability that needs root cause analysis to prevent recurrence.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-014</strong></td>
+      <td>2024-01-14</td>
+      <td>CUST-8801</td>
+      <td><span class="badge badge-Critical">Critical</span></td>
+      <td>Model Output<br><small class="prior-list">Hallucination</small></td>
+      <td><span class="badge badge-Open">Open</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-026</span>
+        
+      </td>
+      <td style="max-width:320px">Model is fabricating customer data (names, order numbers) in a CRM integration, which poses serious data integrity and legal/compliance risks. This is actively corrupting customer production data and requires immediate investigation and remediation.</td>
+    </tr>
+    
+    <tr class="">
+      <td><strong>TKT-015</strong></td>
+      <td>2024-01-15</td>
+      <td>CUST-5502</td>
+      <td><span class="badge badge-Medium">Medium</span></td>
+      <td>Performance<br><small class="prior-list">Throughput</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        -
+      </td>
+      <td style="max-width:320px">Customer cannot meet their throughput requirements (3,200 vs 10,000 docs/hour), but this appears to be a capacity/scaling limitation rather than a bug. A workaround or upgrade path should be discussed to improve the satisfaction score from 3.0.</td>
+    </tr>
+    
+    <tr class="">
+      <td><strong>TKT-016</strong></td>
+      <td>2024-01-15</td>
+      <td>CUST-3344</td>
+      <td><span class="badge badge-Low">Low</span></td>
+      <td>Integration<br><small class="prior-list">API Error</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        -
+      </td>
+      <td style="max-width:320px">Occasional malformed JSON responses is a single first-time report with high satisfaction (5.0), suggesting either the issue was intermittent or the resolution was effective. Monitor for recurrence but no immediate action needed.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-017</strong></td>
+      <td>2024-01-16</td>
+      <td>CUST-4421</td>
+      <td><span class="badge badge-High">High</span></td>
+      <td>Safety<br><small class="prior-list">Content Filter</small></td>
+      <td><span class="badge badge-Escalated">Escalated</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-029, TKT-044</span>
+        
+      </td>
+      <td style="max-width:320px">Regulated financial institution is being blocked from legitimate compliance discussions by overly aggressive content filters, creating legal/regulatory exposure and blocking their business use case. Requires immediate escalation to product/safety team for allowlisting or filter tuning.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-018</strong></td>
+      <td>2024-01-17</td>
+      <td>CUST-9921</td>
+      <td><span class="badge badge-Low">Low</span></td>
+      <td>Onboarding<br><small class="prior-list">Setup</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-050</span>
+        
+      </td>
+      <td style="max-width:320px">Standard onboarding question about prompt engineering best practices with documentation gaps. This is typical for new customers and the satisfaction score (4.0) suggests the issue was resolved adequately; consider updating documentation for future onboarding.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-019</strong></td>
+      <td>2024-01-18</td>
+      <td>CUST-1155</td>
+      <td><span class="badge badge-Critical">Critical</span></td>
+      <td>Model Output<br><small class="prior-list">Inconsistency</small></td>
+      <td><span class="badge badge-Open">Open</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-011, TKT-034, TKT-005, TKT-048</span>
+        
+      </td>
+      <td style="max-width:320px">Third occurrence of response inconsistency (TKT-005, TKT-011) with temperature locked at 0, now blocking production deployment. This is a recurring systemic issue that requires root cause analysis and is critical to resolve before customer can go live.</td>
+    </tr>
+    
+    <tr class="">
+      <td><strong>TKT-020</strong></td>
+      <td>2024-01-18</td>
+      <td>CUST-6671</td>
+      <td><span class="badge badge-Low">Low</span></td>
+      <td>Billing<br><small class="prior-list">Pricing</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        -
+      </td>
+      <td style="max-width:320px">Standard billing inquiry comparing plan tiers; resolved with good satisfaction (4.0). No action needed beyond ensuring the answer provided was clear and accurate.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-021</strong></td>
+      <td>2024-01-21</td>
+      <td>CUST-2234</td>
+      <td><span class="badge badge-Critical">Critical</span></td>
+      <td>Model Output<br><small class="prior-list">Bias</small></td>
+      <td><span class="badge badge-Open">Open</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-037, TKT-007</span>
+        
+      </td>
+      <td style="max-width:320px">Two-week-old follow-up to unresolved bias issue (TKT-007) causing documented harm in customer's product, with no status update. Customer is escalating and frustrated; this requires immediate executive visibility, ETA communication, and remediation plan to prevent further reputational damage.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-022</strong></td>
+      <td>2024-01-21</td>
+      <td>CUST-4892</td>
+      <td><span class="badge badge-Medium">Medium</span></td>
+      <td>Integration<br><small class="prior-list">Data Format</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-036</span>
+        
+      </td>
+      <td style="max-width:320px">Inconsistent output formatting between markdown and plain text is a second-occurrence integration issue that impacts downstream processing. While marked resolved, the inconsistency suggests an underlying bug that may recur and warrant root cause investigation.</td>
+    </tr>
+    
+    <tr class="">
+      <td><strong>TKT-023</strong></td>
+      <td>2024-01-22</td>
+      <td>CUST-7743</td>
+      <td><span class="badge badge-High">High</span></td>
+      <td>Performance<br><small class="prior-list">Latency</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        -
+      </td>
+      <td style="max-width:320px">15-second response latency is a recurring performance issue (second occurrence from same customer). This is production-blocking and justifies escalation to High despite current resolution status.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-024</strong></td>
+      <td>2024-01-22</td>
+      <td>CUST-3310</td>
+      <td><span class="badge badge-Critical">Critical</span></td>
+      <td>Model Output<br><small class="prior-list">Hallucination</small></td>
+      <td><span class="badge badge-Open">Open</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-009</span>
+        
+      </td>
+      <td style="max-width:320px">Three-week-old unresolved hallucination issue in production with explicit churn threat ('considering switching providers'). This represents both safety risk and imminent customer loss requiring immediate senior engineering attention.</td>
+    </tr>
+    
+    <tr class="">
+      <td><strong>TKT-025</strong></td>
+      <td>2024-01-23</td>
+      <td>CUST-5502</td>
+      <td><span class="badge badge-Medium">Medium</span></td>
+      <td>Integration<br><small class="prior-list">API Timeout</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        -
+      </td>
+      <td style="max-width:320px">API timeouts on large payloads indicate a scalability constraint affecting integration workflows. Though resolved, this represents a first-occurrence issue that needs monitoring to prevent recurrence.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-026</strong></td>
+      <td>2024-01-24</td>
+      <td>CUST-8801</td>
+      <td><span class="badge badge-Critical">Critical</span></td>
+      <td>Model Output<br><small class="prior-list">Hallucination</small></td>
+      <td><span class="badge badge-Open">Open</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-014</span>
+        
+      </td>
+      <td style="max-width:320px">Unresolved hallucination ticket now escalated to account manager with customer explicitly dissatisfied. Combined with TKT-024, this indicates a systemic hallucination problem affecting multiple enterprise customers.</td>
+    </tr>
+    
+    <tr class="">
+      <td><strong>TKT-027</strong></td>
+      <td>2024-01-24</td>
+      <td>CUST-1122</td>
+      <td><span class="badge badge-Low">Low</span></td>
+      <td>Onboarding<br><small class="prior-list">Setup</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        -
+      </td>
+      <td style="max-width:320px">Standard onboarding question about fine-tuning with high satisfaction resolution. No action needed beyond maintaining documentation quality.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-028</strong></td>
+      <td>2024-01-25</td>
+      <td>CUST-9921</td>
+      <td><span class="badge badge-Medium">Medium</span></td>
+      <td>Model Output<br><small class="prior-list">Quality</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-040</span>
+        
+      </td>
+      <td style="max-width:320px">Verbosity issue impacting end-user experience and customer retention on the client's platform. Workaround exists (prompt engineering) but product-level fix would improve satisfaction.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-029</strong></td>
+      <td>2024-01-28</td>
+      <td>CUST-4421</td>
+      <td><span class="badge badge-Critical">Critical</span></td>
+      <td>Safety<br><small class="prior-list">Content Filter</small></td>
+      <td><span class="badge badge-Open">Open</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-017, TKT-044</span>
+        
+      </td>
+      <td style="max-width:320px">Second escalation on content filtering with enterprise agreement in limbo creates legal and contractual risk. Delays on safety-related requirements for enterprise customers require executive intervention.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-030</strong></td>
+      <td>2024-01-28</td>
+      <td>CUST-6671</td>
+      <td><span class="badge badge-High">High</span></td>
+      <td>Model Output<br><small class="prior-list">Inconsistency</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-042</span>
+        
+      </td>
+      <td style="max-width:320px">Non-deterministic output formatting from identical prompts suggests a consistency bug in model serving. This is a first-occurrence issue but relates to broader formatting problems (TKT-022) and warrants investigation.</td>
+    </tr>
+    
+    <tr class="">
+      <td><strong>TKT-031</strong></td>
+      <td>2024-01-29</td>
+      <td>CUST-3344</td>
+      <td><span class="badge badge-Medium">Medium</span></td>
+      <td>Performance<br><small class="prior-list">Throughput</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        -
+      </td>
+      <td style="max-width:320px">Degraded performance with increased document length indicates a scalability constraint that could limit use cases. First occurrence but affects core functionality and should be tracked.</td>
+    </tr>
+    
+    <tr class="">
+      <td><strong>TKT-032</strong></td>
+      <td>2024-01-29</td>
+      <td>CUST-2891</td>
+      <td><span class="badge badge-Medium">Medium</span></td>
+      <td>Billing<br><small class="prior-list">Disputed Charge</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        -
+      </td>
+      <td style="max-width:320px">Customer was charged during paused subscription period. While resolved, the satisfaction score of 3.0 indicates incomplete resolution. This is a second-occurrence billing issue type that needs process review to prevent recurrence.</td>
+    </tr>
+    
+    <tr class="">
+      <td><strong>TKT-033</strong></td>
+      <td>2024-01-30</td>
+      <td>CUST-7743</td>
+      <td><span class="badge badge-Low">Low</span></td>
+      <td>Integration<br><small class="prior-list">SDK Deprecation</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        -
+      </td>
+      <td style="max-width:320px">Python SDK deprecation warnings are a maintenance item with a satisfied customer (5.0 score). Low urgency unless impacting production deployments.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-034</strong></td>
+      <td>2024-01-30</td>
+      <td>CUST-1155</td>
+      <td><span class="badge badge-Critical">Critical</span></td>
+      <td>Model Output<br><small class="prior-list">Inconsistency</small></td>
+      <td><span class="badge badge-Escalated">Escalated</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-011, TKT-019, TKT-048, TKT-005</span>
+        
+      </td>
+      <td style="max-width:320px">This is the fourth report of the same inconsistency issue with documented history (TKT-005, TKT-011, TKT-019) and customer threatening cancellation. Requires immediate engineering escalation and resolution plan to retain customer.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-035</strong></td>
+      <td>2024-01-31</td>
+      <td>CUST-5502</td>
+      <td><span class="badge badge-Critical">Critical</span></td>
+      <td>Model Output<br><small class="prior-list">Hallucination</small></td>
+      <td><span class="badge badge-Open">Open</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-045</span>
+        
+      </td>
+      <td style="max-width:320px">Model hallucinating fictional reviews going live to e-commerce platform next week creates immediate legal and reputational risk. This is a production blocker requiring urgent engineering intervention before deployment.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-036</strong></td>
+      <td>2024-02-01</td>
+      <td>CUST-4892</td>
+      <td><span class="badge badge-Low">Low</span></td>
+      <td>Integration<br><small class="prior-list">Webhook</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-022</span>
+        
+      </td>
+      <td style="max-width:320px">Feature request for webhook notifications that was successfully resolved with satisfied customer (5.0 score). This is an onboarding/feature clarification with no ongoing issues.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-037</strong></td>
+      <td>2024-02-01</td>
+      <td>CUST-2234</td>
+      <td><span class="badge badge-Critical">Critical</span></td>
+      <td>Model Output<br><small class="prior-list">Bias</small></td>
+      <td><span class="badge badge-Escalated">Escalated</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-007, TKT-021</span>
+        
+      </td>
+      <td style="max-width:320px">Recurring bias issue (TKT-007, TKT-021) with legal complaints from end users and three weeks without resolution represents serious legal exposure and customer harm. Immediate executive and legal involvement required.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-038</strong></td>
+      <td>2024-02-03</td>
+      <td>CUST-8801</td>
+      <td><span class="badge badge-Critical">Critical</span></td>
+      <td>Performance<br><small class="prior-list">Latency</small></td>
+      <td><span class="badge badge-Open">Open</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-049</span>
+        
+      </td>
+      <td style="max-width:320px">20+ second response times render platform completely unusable, constituting a production outage. This is a critical service degradation requiring immediate incident response and root cause analysis.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-039</strong></td>
+      <td>2024-02-04</td>
+      <td>CUST-3310</td>
+      <td><span class="badge badge-High">High</span></td>
+      <td>Account<br><small class="prior-list">Cancellation</small></td>
+      <td><span class="badge badge-Open">Open</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-009, TKT-024</span>
+        
+      </td>
+      <td style="max-width:320px">Customer actively cancelling subscription referencing prior unresolved issues (TKT-009, TKT-024) and requesting data export. Requires immediate processing to prevent data loss and gather churn feedback.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-040</strong></td>
+      <td>2024-02-04</td>
+      <td>CUST-9921</td>
+      <td><span class="badge badge-Low">Low</span></td>
+      <td>Model Output<br><small class="prior-list">Quality</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-028</span>
+        
+      </td>
+      <td style="max-width:320px">Feature/capability question about tone variation resolved with satisfied customer (4.0 score). This is a single product inquiry with no operational impact.</td>
+    </tr>
+    
+    <tr class="">
+      <td><strong>TKT-041</strong></td>
+      <td>2024-02-05</td>
+      <td>CUST-1122</td>
+      <td><span class="badge badge-Low">Low</span></td>
+      <td>Integration<br><small class="prior-list">Authentication</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        -
+      </td>
+      <td style="max-width:320px">Security best practice question successfully resolved with satisfied customer (5.0 score). This is an onboarding/documentation query with no system issues.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-042</strong></td>
+      <td>2024-02-05</td>
+      <td>CUST-6671</td>
+      <td><span class="badge badge-Medium">Medium</span></td>
+      <td>Model Output<br><small class="prior-list">Hallucination</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-030</span>
+        
+      </td>
+      <td style="max-width:320px">Customer reports model hallucinating features during demos, causing reputational damage. Low satisfaction score (2.0) despite resolution suggests underlying issue may persist; recommend root cause analysis and proactive outreach.</td>
+    </tr>
+    
+    <tr class="">
+      <td><strong>TKT-043</strong></td>
+      <td>2024-02-06</td>
+      <td>CUST-7743</td>
+      <td><span class="badge badge-Low">Low</span></td>
+      <td>Billing<br><small class="prior-list">Overage</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        -
+      </td>
+      <td style="max-width:320px">Standard billing inquiry regarding unexpected overage charges. Customer satisfied (4.0 score) and ticket resolved; routine billing query requiring usage audit and explanation.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-044</strong></td>
+      <td>2024-02-07</td>
+      <td>CUST-4421</td>
+      <td><span class="badge badge-Critical">Critical</span></td>
+      <td>Safety<br><small class="prior-list">Content Filter</small></td>
+      <td><span class="badge badge-Open">Open</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-029, TKT-017</span>
+        
+      </td>
+      <td style="max-width:320px">Safety-critical content filters not configured for enterprise customer 3 weeks after signing agreement, with recurring references (TKT-017, TKT-029). This is a security/compliance risk exposure requiring immediate escalation and configuration.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-045</strong></td>
+      <td>2024-02-07</td>
+      <td>CUST-5502</td>
+      <td><span class="badge badge-Critical">Critical</span></td>
+      <td>Model Output<br><small class="prior-list">Hallucination</small></td>
+      <td><span class="badge badge-Open">Open</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-035</span>
+        
+      </td>
+      <td style="max-width:320px">Known hallucination bug now in production affecting live customer deployment. This creates data quality and reputational risk; requires immediate incident response and potential customer communication.</td>
+    </tr>
+    
+    <tr class="">
+      <td><strong>TKT-046</strong></td>
+      <td>2024-02-10</td>
+      <td>CUST-3344</td>
+      <td><span class="badge badge-High">High</span></td>
+      <td>Model Output<br><small class="prior-list">Quality</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        -
+      </td>
+      <td style="max-width:320px">Systemic quality degradation for non-English (German) text impacts customer segment. Despite resolution mark, this indicates a product deficiency affecting market expansion; recommend investigation for pattern across other non-English languages.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-047</strong></td>
+      <td>2024-02-10</td>
+      <td>CUST-2891</td>
+      <td><span class="badge badge-Medium">Medium</span></td>
+      <td>Integration<br><small class="prior-list">Api Error</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-013, TKT-002</span>
+        
+      </td>
+      <td style="max-width:320px">Intermittent 500 errors occurring twice daily represent production reliability issue. While resolved and customer satisfied, recurring pattern warrants infrastructure review to prevent escalation.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-048</strong></td>
+      <td>2024-02-11</td>
+      <td>CUST-1155</td>
+      <td><span class="badge badge-Critical">Critical</span></td>
+      <td>Model Output<br><small class="prior-list">Inconsistency</small></td>
+      <td><span class="badge badge-Escalated">Escalated</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-011, TKT-019, TKT-034, TKT-005</span>
+        
+      </td>
+      <td style="max-width:320px">Fifth occurrence of the same issue (TKT-005, TKT-011, TKT-019, TKT-034) with formal customer complaint and SLA compensation request. This is chronic product failure with legal/financial exposure requiring immediate escalation and resolution strategy.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-049</strong></td>
+      <td>2024-02-12</td>
+      <td>CUST-8801</td>
+      <td><span class="badge badge-Critical">Critical</span></td>
+      <td>Performance<br><small class="prior-list">Latency</small></td>
+      <td><span class="badge badge-Open">Open</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-038</span>
+        
+      </td>
+      <td style="max-width:320px">Latency degrading to 30+ seconds with no response to prior ticket (TKT-038) indicates production is becoming unusable. This is blocking customer operations and requires emergency response and status update.</td>
+    </tr>
+    
+    <tr class="recurrence">
+      <td><strong>TKT-050</strong></td>
+      <td>2024-02-12</td>
+      <td>CUST-9921</td>
+      <td><span class="badge badge-Low">Low</span></td>
+      <td>Onboarding<br><small class="prior-list">Training</small></td>
+      <td><span class="badge badge-Resolved">Resolved</span></td>
+      <td>
+        
+          Prior: <span class="prior-list">TKT-018</span>
+        
+      </td>
+      <td style="max-width:320px">Standard onboarding training request from satisfied customer (5.0 score). Routine administrative request to schedule training session; can be handled through standard onboarding process.</td>
+    </tr>
+    
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>
